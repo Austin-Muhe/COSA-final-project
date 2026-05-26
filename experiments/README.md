@@ -1,4 +1,4 @@
-﻿# Experiments
+# Experiments
 
 This folder contains our custom experiment scripts.
 

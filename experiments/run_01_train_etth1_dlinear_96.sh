@@ -4,7 +4,7 @@ set -e
 source /home/wwww/miniconda3/etc/profile.d/conda.sh
 conda activate cosa
 
-PROJECT_ROOT="/home/wwww/projects/COSA-final-project"
+PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 COSA_DIR="$PROJECT_ROOT/external/COSA_ICLR2026"
 
 cd "$COSA_DIR"
