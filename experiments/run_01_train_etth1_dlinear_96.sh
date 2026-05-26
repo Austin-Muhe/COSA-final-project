@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env bash
+#!/usr/bin/env bash
 set -e
 
 source /home/wwww/miniconda3/etc/profile.d/conda.sh
