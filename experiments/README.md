@@ -25,4 +25,4 @@ Recommended order:
 
 Run from the project root:
 
-    cd /home/wwww/projects/Anhe/COSA-final-project
+    cd /home/wwww/projects/COSA-final-project
