@@ -1,0 +1,9 @@
+{
+  "variant": "rich_ctx",
+  "test_mse": 0.3447718024253845,
+  "test_mae": 0.3589724004268646,
+  "adaptation_count": 615
+}
+MSE: 0.344772
+MAE: 0.358972
+Gate: /home/wwww/projects/COSA-final-project/results/ablation_weather_dlinear/rich_ctx/DLinear/weather/720/gate_rich_ctx_weather_DLinear_720.npy

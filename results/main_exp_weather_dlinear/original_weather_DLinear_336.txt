@@ -1,0 +1,9 @@
+{
+  "variant": "original",
+  "test_mse": 0.28011855483055115,
+  "test_mae": 0.31098484992980957,
+  "adaptation_count": 639
+}
+MSE: 0.280119
+MAE: 0.310985
+Gate: /home/wwww/projects/COSA-final-project/results/main_exp_weather_dlinear/original/DLinear/weather/336/gate_original_weather_DLinear_336.npy

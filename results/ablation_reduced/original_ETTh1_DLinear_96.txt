@@ -1,0 +1,9 @@
+{
+  "variant": "original",
+  "test_mse": 0.4527335464954376,
+  "test_mae": 0.45288994908332825,
+  "adaptation_count": 213
+}
+MSE: 0.452734
+MAE: 0.452890
+Gate: /home/wwww/projects/COSA-final-project/results/ablation_reduced/original/DLinear/ETTh1/96/gate_original_ETTh1_DLinear_96.npy

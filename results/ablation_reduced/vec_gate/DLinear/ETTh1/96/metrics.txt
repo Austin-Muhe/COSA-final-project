@@ -1,0 +1,4 @@
+variant: vec_gate
+MSE: 0.452959
+MAE: 0.453206
+Gate: /home/wwww/projects/COSA-final-project/results/ablation_reduced/vec_gate/DLinear/ETTh1/96/gate_vec_gate_ETTh1_DLinear_96.npy

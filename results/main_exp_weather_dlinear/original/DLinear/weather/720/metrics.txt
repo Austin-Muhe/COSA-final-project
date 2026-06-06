@@ -1,0 +1,4 @@
+variant: original
+MSE: 0.344698
+MAE: 0.358557
+Gate: /home/wwww/projects/COSA-final-project/results/main_exp_weather_dlinear/original/DLinear/weather/720/gate_original_weather_DLinear_720.npy

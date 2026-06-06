@@ -1,0 +1,4 @@
+variant: original
+MSE: 0.547112
+MAE: 0.518209
+Gate: /home/wwww/projects/COSA-final-project/results/ablation_etth1_dlinear/original/DLinear/ETTh1/336/gate_original_ETTh1_DLinear_336.npy

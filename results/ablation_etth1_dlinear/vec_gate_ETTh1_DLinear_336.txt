@@ -1,0 +1,9 @@
+{
+  "variant": "vec_gate",
+  "test_mse": 0.546484649181366,
+  "test_mae": 0.5185706615447998,
+  "adaptation_count": 198
+}
+MSE: 0.546485
+MAE: 0.518571
+Gate: /home/wwww/projects/COSA-final-project/results/ablation_etth1_dlinear/vec_gate/DLinear/ETTh1/336/gate_vec_gate_ETTh1_DLinear_336.npy

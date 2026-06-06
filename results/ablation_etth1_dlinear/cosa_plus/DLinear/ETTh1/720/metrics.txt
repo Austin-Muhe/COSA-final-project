@@ -1,0 +1,4 @@
+variant: cosa_plus
+MSE: 0.670793
+MAE: 0.599874
+Gate: /home/wwww/projects/COSA-final-project/results/ablation_etth1_dlinear/cosa_plus/DLinear/ETTh1/720/gate_cosa_plus_ETTh1_DLinear_720.npy

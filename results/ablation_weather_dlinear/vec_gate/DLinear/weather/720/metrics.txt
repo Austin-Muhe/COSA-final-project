@@ -1,0 +1,4 @@
+variant: vec_gate
+MSE: 0.349507
+MAE: 0.361333
+Gate: /home/wwww/projects/COSA-final-project/results/ablation_weather_dlinear/vec_gate/DLinear/weather/720/gate_vec_gate_weather_DLinear_720.npy

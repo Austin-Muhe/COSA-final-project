@@ -1,0 +1,4 @@
+variant: cosa_plus
+MSE: 0.280689
+MAE: 0.311692
+Gate: /home/wwww/projects/COSA-final-project/results/main_exp_weather_dlinear/cosa_plus/DLinear/weather/336/gate_cosa_plus_weather_DLinear_336.npy

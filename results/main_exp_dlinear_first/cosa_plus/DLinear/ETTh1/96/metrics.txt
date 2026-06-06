@@ -1,0 +1,4 @@
+variant: cosa_plus
+MSE: 0.453148
+MAE: 0.453327
+Gate: /home/wwww/projects/COSA-final-project/results/main_exp_dlinear_first/cosa_plus/DLinear/ETTh1/96/gate_cosa_plus_ETTh1_DLinear_96.npy

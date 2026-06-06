@@ -1,0 +1,9 @@
+{
+  "variant": "cosa_plus",
+  "test_mse": 0.3491109013557434,
+  "test_mae": 0.36098557710647583,
+  "adaptation_count": 615
+}
+MSE: 0.349111
+MAE: 0.360986
+Gate: /home/wwww/projects/COSA-final-project/results/ablation_weather_dlinear/cosa_plus/DLinear/weather/720/gate_cosa_plus_weather_DLinear_720.npy

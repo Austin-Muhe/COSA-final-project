@@ -1,0 +1,4 @@
+variant: ctx_std_only
+MSE: 1.094001
+MAE: 0.761786
+Gate: /home/wwww/projects/COSA-final-project/results/ablation_reduced/ctx_std_only/DLinear/ETTh1/720/gate_ctx_std_only_ETTh1_DLinear_720.npy

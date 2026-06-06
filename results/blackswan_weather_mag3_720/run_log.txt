@@ -1,0 +1,48 @@
+=== weather 720 mag3 variant=no_tta shift=level ===
+MSE full=0.7070  before=0.1952  after50=0.5340  after100=0.9255  half_recovery=728 steps
+Results saved to /home/wwww/projects/COSA-final-project/results/blackswan_weather_mag3_720/no_tta_level_m3_720.json
+=== weather 720 mag3 variant=no_tta shift=variance ===
+MSE full=2.0412  before=0.1952  after50=0.2244  after100=0.2986  half_recovery=6038 steps
+Results saved to /home/wwww/projects/COSA-final-project/results/blackswan_weather_mag3_720/no_tta_variance_m3_720.json
+=== weather 720 mag3 variant=no_tta shift=trend ===
+MSE full=111.3315  before=0.1952  after50=0.2065  after100=0.3562  half_recovery=-1 steps
+Results saved to /home/wwww/projects/COSA-final-project/results/blackswan_weather_mag3_720/no_tta_trend_m3_720.json
+=== weather 720 mag3 variant=no_tta shift=spike ===
+MSE full=0.3656  before=0.1952  after50=0.2021  after100=0.2380  half_recovery=6027 steps
+Results saved to /home/wwww/projects/COSA-final-project/results/blackswan_weather_mag3_720/no_tta_spike_m3_720.json
+=== weather 720 mag3 variant=original shift=level ===
+MSE full=0.7612  before=0.1489  after50=0.4633  after100=0.7876  half_recovery=807 steps
+Results saved to /home/wwww/projects/COSA-final-project/results/blackswan_weather_mag3_720/original_level_m3_720.json
+=== weather 720 mag3 variant=original shift=variance ===
+MSE full=2.0555  before=0.1489  after50=0.2065  after100=0.2830  half_recovery=6361 steps
+Results saved to /home/wwww/projects/COSA-final-project/results/blackswan_weather_mag3_720/original_variance_m3_720.json
+=== weather 720 mag3 variant=original shift=trend ===
+MSE full=17.8673  before=0.1489  after50=0.1614  after100=0.2686  half_recovery=1166 steps
+Results saved to /home/wwww/projects/COSA-final-project/results/blackswan_weather_mag3_720/original_trend_m3_720.json
+=== weather 720 mag3 variant=original shift=spike ===
+MSE full=0.3454  before=0.1489  after50=0.1606  after100=0.1735  half_recovery=6071 steps
+Results saved to /home/wwww/projects/COSA-final-project/results/blackswan_weather_mag3_720/original_spike_m3_720.json
+=== weather 720 mag3 variant=rich_ctx shift=level ===
+MSE full=0.7204  before=0.1491  after50=0.4634  after100=0.7881  half_recovery=789 steps
+Results saved to /home/wwww/projects/COSA-final-project/results/blackswan_weather_mag3_720/rich_ctx_level_m3_720.json
+=== weather 720 mag3 variant=rich_ctx shift=variance ===
+MSE full=2.0626  before=0.1491  after50=0.2062  after100=0.2828  half_recovery=-1 steps
+Results saved to /home/wwww/projects/COSA-final-project/results/blackswan_weather_mag3_720/rich_ctx_variance_m3_720.json
+=== weather 720 mag3 variant=rich_ctx shift=trend ===
+MSE full=17.8277  before=0.1491  after50=0.1614  after100=0.2691  half_recovery=1016 steps
+Results saved to /home/wwww/projects/COSA-final-project/results/blackswan_weather_mag3_720/rich_ctx_trend_m3_720.json
+=== weather 720 mag3 variant=rich_ctx shift=spike ===
+MSE full=0.3455  before=0.1491  after50=0.1606  after100=0.1738  half_recovery=6070 steps
+Results saved to /home/wwww/projects/COSA-final-project/results/blackswan_weather_mag3_720/rich_ctx_spike_m3_720.json
+=== weather 720 mag3 variant=cosa_plus shift=level ===
+MSE full=0.7615  before=0.1489  after50=0.4665  after100=0.8039  half_recovery=862 steps
+Results saved to /home/wwww/projects/COSA-final-project/results/blackswan_weather_mag3_720/cosa_plus_level_m3_720.json
+=== weather 720 mag3 variant=cosa_plus shift=variance ===
+MSE full=2.0365  before=0.1489  after50=0.2066  after100=0.2901  half_recovery=6069 steps
+Results saved to /home/wwww/projects/COSA-final-project/results/blackswan_weather_mag3_720/cosa_plus_variance_m3_720.json
+=== weather 720 mag3 variant=cosa_plus shift=trend ===
+MSE full=18.0664  before=0.1489  after50=0.1626  after100=0.2790  half_recovery=1120 steps
+Results saved to /home/wwww/projects/COSA-final-project/results/blackswan_weather_mag3_720/cosa_plus_trend_m3_720.json
+=== weather 720 mag3 variant=cosa_plus shift=spike ===
+MSE full=0.3501  before=0.1489  after50=0.1617  after100=0.1832  half_recovery=6130 steps
+Results saved to /home/wwww/projects/COSA-final-project/results/blackswan_weather_mag3_720/cosa_plus_spike_m3_720.json

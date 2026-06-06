@@ -1,0 +1,9 @@
+{
+  "variant": "rich_ctx",
+  "test_mse": 0.5021222233772278,
+  "test_mae": 0.4875962734222412,
+  "adaptation_count": 207
+}
+MSE: 0.502122
+MAE: 0.487596
+Gate: /home/wwww/projects/COSA-final-project/results/ablation_etth1_dlinear/rich_ctx/DLinear/ETTh1/192/gate_rich_ctx_ETTh1_DLinear_192.npy

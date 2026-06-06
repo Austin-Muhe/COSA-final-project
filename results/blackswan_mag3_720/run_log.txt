@@ -1,0 +1,36 @@
+=== 720 mag3 variant=no_tta shift=level ===
+MSE full=1.9410  before=0.8651  after50=1.5141  after100=2.0805  half_recovery=720 steps
+Results saved to /home/wwww/projects/COSA-final-project/results/blackswan_mag3_720/no_tta_level_m3_720.json
+=== 720 mag3 variant=no_tta shift=variance ===
+MSE full=4.5633  before=0.8651  after50=1.4018  after100=1.8913  half_recovery=1003 steps
+Results saved to /home/wwww/projects/COSA-final-project/results/blackswan_mag3_720/no_tta_variance_m3_720.json
+=== 720 mag3 variant=no_tta shift=trend ===
+MSE full=107.0352  before=0.8651  after50=1.0925  after100=1.3367  half_recovery=-1 steps
+Results saved to /home/wwww/projects/COSA-final-project/results/blackswan_mag3_720/no_tta_trend_m3_720.json
+=== 720 mag3 variant=no_tta shift=spike ===
+MSE full=0.7099  before=0.8651  after50=1.0715  after100=1.1118  half_recovery=140 steps
+Results saved to /home/wwww/projects/COSA-final-project/results/blackswan_mag3_720/no_tta_spike_m3_720.json
+=== 720 mag3 variant=original shift=level ===
+MSE full=2.0279  before=0.8115  after50=1.3900  after100=1.9191  half_recovery=729 steps
+Results saved to /home/wwww/projects/COSA-final-project/results/blackswan_mag3_720/original_level_m3_720.json
+=== 720 mag3 variant=original shift=variance ===
+MSE full=4.5705  before=0.8115  after50=1.3126  after100=1.7934  half_recovery=1038 steps
+Results saved to /home/wwww/projects/COSA-final-project/results/blackswan_mag3_720/original_variance_m3_720.json
+=== 720 mag3 variant=original shift=trend ===
+MSE full=62.7370  before=0.8115  after50=0.9965  after100=1.2197  half_recovery=1285 steps
+Results saved to /home/wwww/projects/COSA-final-project/results/blackswan_mag3_720/original_trend_m3_720.json
+=== 720 mag3 variant=original shift=spike ===
+MSE full=0.6777  before=0.8115  after50=0.9798  after100=1.0165  half_recovery=139 steps
+Results saved to /home/wwww/projects/COSA-final-project/results/blackswan_mag3_720/original_spike_m3_720.json
+=== 720 mag3 variant=cosa_plus shift=level ===
+MSE full=2.0044  before=0.8086  after50=1.3707  after100=1.8848  half_recovery=742 steps
+Results saved to /home/wwww/projects/COSA-final-project/results/blackswan_mag3_720/cosa_plus_level_m3_720.json
+=== 720 mag3 variant=cosa_plus shift=variance ===
+MSE full=4.5512  before=0.8086  after50=1.3033  after100=1.7782  half_recovery=1042 steps
+Results saved to /home/wwww/projects/COSA-final-project/results/blackswan_mag3_720/cosa_plus_variance_m3_720.json
+=== 720 mag3 variant=cosa_plus shift=trend ===
+MSE full=61.3743  before=0.8086  after50=0.9854  after100=1.1979  half_recovery=1238 steps
+Results saved to /home/wwww/projects/COSA-final-project/results/blackswan_mag3_720/cosa_plus_trend_m3_720.json
+=== 720 mag3 variant=cosa_plus shift=spike ===
+MSE full=0.6753  before=0.8086  after50=0.9699  after100=1.0022  half_recovery=137 steps
+Results saved to /home/wwww/projects/COSA-final-project/results/blackswan_mag3_720/cosa_plus_spike_m3_720.json

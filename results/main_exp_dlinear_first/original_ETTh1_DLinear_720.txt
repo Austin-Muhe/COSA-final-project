@@ -1,0 +1,9 @@
+{
+  "variant": "original",
+  "test_mse": 1.09451425075531,
+  "test_mae": 0.7621037364006042,
+  "adaptation_count": 174
+}
+MSE: 1.094514
+MAE: 0.762104
+Gate: /home/wwww/projects/COSA-final-project/results/main_exp_dlinear_first/original/DLinear/ETTh1/720/gate_original_ETTh1_DLinear_720.npy

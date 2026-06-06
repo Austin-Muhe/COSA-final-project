@@ -1,0 +1,4 @@
+variant: rich_ctx
+MSE: 0.452891
+MAE: 0.452978
+Gate: /home/wwww/projects/COSA-final-project/results/ablation_reduced/rich_ctx/DLinear/ETTh1/96/gate_rich_ctx_ETTh1_DLinear_96.npy

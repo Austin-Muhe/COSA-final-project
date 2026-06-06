@@ -1,0 +1,9 @@
+{
+  "variant": "ctx_std_only",
+  "test_mse": 0.3448680341243744,
+  "test_mae": 0.35896140336990356,
+  "adaptation_count": 615
+}
+MSE: 0.344868
+MAE: 0.358961
+Gate: /home/wwww/projects/COSA-final-project/results/ablation_weather_dlinear/ctx_std_only/DLinear/weather/720/gate_ctx_std_only_weather_DLinear_720.npy

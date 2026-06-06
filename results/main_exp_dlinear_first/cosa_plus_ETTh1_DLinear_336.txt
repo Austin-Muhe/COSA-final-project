@@ -1,0 +1,9 @@
+{
+  "variant": "cosa_plus",
+  "test_mse": 0.9881746172904968,
+  "test_mae": 0.7069936990737915,
+  "adaptation_count": 198
+}
+MSE: 0.988175
+MAE: 0.706994
+Gate: /home/wwww/projects/COSA-final-project/results/main_exp_dlinear_first/cosa_plus/DLinear/ETTh1/336/gate_cosa_plus_ETTh1_DLinear_336.npy
