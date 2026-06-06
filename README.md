@@ -152,49 +152,73 @@ Expected path:
 
     /home/wwww/projects/COSA-final-project/external/COSA_ICLR2026/datasets/ETTh1.csv
 
-## Planned Minimal Experiment
+## Minimal Reproduction Experiment
 
-Initial minimal setting:
+Completed minimal setting:
 
 - Dataset: ETTh1
+- Model: DLinear
 - Prediction length: 96
-- Model: follow the official COSA script first
 - Methods:
   - No-TTA baseline
   - COSA
 
-After the minimal reproduction works, we will add non-IID abrupt test-time shifts.
+Result:
+
+- Baseline MSE: 0.4594808246
+- COSA MSE: 0.4527572393
+- Improvement: 1.46%
+
+This verifies that the official COSA pipeline can run in our server environment.
 
 ## Non-IID Abrupt Shift Experiments
 
-We will preserve the temporal order of the test set and inject abrupt shifts at selected test-time positions.
+We preserve the temporal order of the test set and inject an abrupt distribution shift into the test-time stream. This is the main extension beyond direct reproduction and is used to study whether COSA remains effective when the data stream suddenly changes.
 
-Planned shift types:
+Current implemented setting:
 
-1. Level shift
+- Dataset: Exchange Rate
+- Model: DLinear
+- Prediction length: 96
+- Shift type: abrupt spike/level shock on the second half of the test split
+- Severities: 0 sigma, 5 sigma, 10 sigma
 
-       x_t' = x_t + c
+Implemented shift:
 
-2. Variance shift
+    x_t' = x_t,                       if t < T_shift
+    x_t' = x_t + alpha * sigma,       if t >= T_shift
 
-       x_t' = mean + alpha * (x_t - mean)
+where `T_shift` is the midpoint of the test split, `alpha` is the severity, and `sigma` is the per-variable test-set standard deviation.
 
-3. Trend shift
+Results:
 
-       x_t' = x_t + beta * (t - T_shift)
+| Dataset | Model | Horizon | Shift | Baseline MSE | COSA MSE | Improvement | NAR |
+| --- | --- | --- | --- | ---: | ---: | ---: | ---: |
+| exchange_rate | DLinear | 96 | none, 0 sigma | 0.0827968419 | 0.0817446634 | 1.27% | 37.13% |
+| exchange_rate | DLinear | 96 | abrupt spike, 5 sigma | 0.5509226918 | 0.5524317026 | -0.27% | 53.66% |
+| exchange_rate | DLinear | 96 | abrupt spike, 10 sigma | 2.1627802849 | 2.1673173904 | -0.21% | 56.40% |
 
-4. Spike or short-term shock
+Segment analysis:
 
-       x_t' = x_t + k * std
+| Shift | Baseline before | COSA before | Baseline transition | COSA transition | Baseline after | COSA after |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| 0 sigma | 0.0692245141 | 0.0691839233 | 0.1459996402 | 0.1437337101 | 0.0860871598 | 0.0843231827 |
+| 5 sigma | 0.0692245141 | 0.0690561831 | 6.6955876350 | 6.7212104797 | 0.1471323967 | 0.1468728036 |
+| 10 sigma | 0.0692245141 | 0.0690915585 | 29.2314300537 | 29.2752418518 | 0.3594304919 | 0.3627609611 |
+
+The transition segment contains forecasting windows whose prediction targets cross the abrupt shift boundary. This segment shows the largest error increase, which matches the black-swan setting: the model sees pre-shift context but must forecast values that partly enter the shifted regime.
+
+Initial interpretation:
+
+COSA gives a small improvement in the clean Exchange Rate setting. Under abrupt 5 sigma and 10 sigma shifts, the overall improvement becomes negative and NAR rises above 50%, meaning COSA is worse than the no-TTA baseline on more than half of the test windows. This suggests that COSA may be less reliable when the test-time stream contains strong abrupt shifts.
 
 Evaluation metrics:
 
 - MSE
 - MAE
-- Error before shift
-- Error near shift point
-- Error after shift
-- Recovery behavior after shift
+- Improvement percentage over the no-TTA baseline
+- NAR percentage, the percentage of test windows where COSA has higher MSE than the baseline
+- Before/transition/after shift MSE based on whether each prediction target is before, crossing, or after the shift boundary
 
 ## Current Status
 
@@ -206,14 +230,16 @@ Completed:
 - Conda environment `cosa` created
 - GPU environment tested successfully
 - Basic Python packages tested successfully
+- ETTh1 DLinear 96 clean baseline training completed
+- ETTh1 DLinear 96 COSA test-time adaptation completed
+- Exchange Rate DLinear 96 spike-shift black-swan experiment completed
+- Main result tables generated
 
 Not completed yet:
 
-- Dataset preparation
-- First minimal training run
-- First COSA run
-- Non-IID abrupt shift experiments
 - Result analysis and final report
+- Presentation slides
+- AI usage statement and team contribution statement for the report
 
 ## Team Workflow
 

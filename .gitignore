@@ -42,3 +42,18 @@ cache/
 .DS_Store
 .vscode/
 .idea/
+
+# Project data and generated artifacts
+shared_data/
+external/COSA_ICLR2026/data/
+external/COSA_ICLR2026/datasets/*.csv
+external/COSA_ICLR2026/checkpoints/
+external/COSA_ICLR2026/results/**/*.npy
+external/COSA_ICLR2026/results/**/*.pth
+results/test_black_swan/**/*.npy
+results/logs/
+
+# Keep small summary tables trackable
+!results/tables/
+!results/tables/*.csv
+!results/test_black_swan/**/experiment_summary.csv
