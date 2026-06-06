@@ -26,7 +26,7 @@
 \vspace{-1.4em}
 
 \begin{abstract}
-Group members: Name / Student ID, Name / Student ID, Name / Student ID. This project studies test-time adaptation for long-term time-series forecasting. We reproduce the COSA output-space adapter and implement COSA+, a lightweight variant that combines richer test-time context statistics with a horizon-wise vector gate. Our research question is whether such an adapter can improve robustness when the test stream contains abrupt non-IID shifts. Experiments use DLinear on ETTh1 and Weather with clean tests, ablations, and black-swan shifts including level, variance, trend, and spike changes. The results are mixed but informative: COSA+ is not consistently better on clean short-horizon settings, yet it improves ETTh1 horizon-720 post-shift MSE against original COSA on all four synthetic shifts. On Weather, adaptation clearly beats no test-time adaptation under shifts, but the full COSA+ gate is slightly weaker than the original adapter. These results suggest that richer adaptation can help under long-horizon abrupt shifts, but it must be controlled carefully for dataset-specific volatility.
+Group members: Name / Student ID, Name / Student ID, Name / Student ID. This project studies test-time adaptation for long-term time-series forecasting. We reproduce the COSA output-space adapter and implement COSA+, a lightweight variant that combines richer test-time context statistics with a horizon-wise vector gate. Our research question is whether such an adapter can improve robustness when the test stream contains abrupt non-IID shifts. Experiments use DLinear on ETTh1 and Weather with clean tests, ablations, and black-swan shifts including level, variance, trend, and spike changes. The results are conditional but informative: COSA+ is not consistently better on clean short-horizon settings, yet it improves ETTh1 horizon-720 post-shift MSE against original COSA on all four synthetic shifts. On Weather, adaptation clearly beats no test-time adaptation under shifts, but the full vector gate is slightly weaker than the original adapter. These results suggest that richer adaptation can help under long-horizon abrupt shifts, while high-dimensional volatile datasets require more careful gate regularization.
 \end{abstract}
 \vspace{-0.8em}
 
@@ -49,6 +49,13 @@ We compare three method families. \textbf{No-TTA} evaluates the trained DLinear 
   \item \textbf{Vector gate}: instead of applying one coarse correction, the adapter can gate corrections by forecast step, which should matter more for long horizons.
   \item \textbf{Controlled variants}: \texttt{rich\_ctx}, \texttt{ctx\_std\_only}, and \texttt{vec\_gate} isolate which part of COSA+ changes behavior.
 \end{itemize}
+
+More concretely, original COSA applies a residual correction
+\begin{equation}
+  \hat{Y} = Y_{\text{base}} + \tanh(g)H,\quad
+  H = W[Y_{\text{base}}; C_t] + b,
+\end{equation}
+where $g$ is a scalar gate and $C_t$ stores recent context means. COSA+ replaces the scalar gate with $g\in\mathbb{R}^{L}$ for step-wise correction and optionally expands $C_t$ from mean-only statistics to mean-plus-standard-deviation statistics. The adapter still starts as the identity because $g$ is initialized to zero.
 
 For black-swan evaluation, the second part of the test stream is transformed after a shift point $T_{\text{shift}}$:
 \begin{equation}
@@ -121,6 +128,13 @@ The ablation in Table~\ref{tab:ablation} explains the clean ETTh1 pattern. The v
 \label{fig:ablation}
 \end{figure}
 
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.72\linewidth]{../../results/final_figures/figure3_gate_heatmap_etth1_h720.pdf}
+\caption{Learned COSA+ vector gate on ETTh1 horizon 720. Non-uniform values indicate that the adapter learns different correction strengths across forecast steps.}
+\label{fig:gate}
+\end{figure}
+
 \begin{table}[H]
 \centering
 \small
@@ -164,10 +178,10 @@ Spike & 0.2021 & 0.1606 & \textbf{0.1606} & 0.1617 \\
 \label{tab:weather_shift}
 \end{table}
 
-Weather gives a more cautious conclusion. Adaptation is clearly valuable under shifts: original COSA reduces post-shift MSE by about 8\% on variance shift and more than 20\% on trend/spike shifts compared with no-TTA. However, the full COSA+ variant is slightly worse than original COSA. The rich-context-only variant is almost tied with original and slightly best on variance/spike. This suggests that volatility-aware context is safe, while combining it with a vector gate needs stronger regularization or dataset-specific tuning.
+Weather gives a more cautious conclusion. Adaptation is clearly valuable under shifts: original COSA reduces post-shift MSE by about 8\% on variance shift and more than 20\% on trend/spike shifts compared with no-TTA. However, the full COSA+ variant is slightly worse than original COSA. The rich-context-only variant is almost tied with original and slightly best on variance/spike. A plausible reason is dataset dimensionality: ETTh1 has 7 variables, while Weather has 21 variables. COSA adapts variable-wise output streams, so the adaptation signal is spread across more parallel univariate streams on Weather. With only $S=3$ gradient steps per batch, the 720-dimensional vector gate may not receive enough stable signal to learn useful step-wise corrections. This separates the two modifications: Mod B (rich context) is stable, while Mod A (vector gating) needs stronger regularization or dataset-specific tuning on high-dimensional volatile data.
 
 \section{Conclusion}
-This project reproduced COSA and explored COSA+ for robust test-time adaptation in time-series forecasting. The main finding is conditional rather than absolute. COSA+ does not reliably improve clean short-horizon performance, and on Weather the full vector gate can hurt. However, at ETTh1 horizon 720 under abrupt black-swan shifts, COSA+ consistently improves over original COSA and no-TTA. The result supports the idea that richer output-space adaptation is most useful when the forecast horizon is long and post-shift errors accumulate over many future steps. Future work should tune the gate regularization, add explicit shift detection, and test more backbones such as iTransformer.
+This project reproduced COSA and explored COSA+ for robust test-time adaptation in time-series forecasting. The main finding is conditional rather than absolute. COSA+ does not reliably improve clean short-horizon performance, and on Weather the full vector gate can hurt. However, at ETTh1 horizon 720 under abrupt black-swan shifts, COSA+ consistently improves over original COSA and no-TTA. The result supports the idea that richer output-space adaptation is most useful when the forecast horizon is long and post-shift errors accumulate over many future steps. The limitation is equally important: high-dimensional Weather results show that vector gating should not be treated as a free improvement. Future work should tune gate regularization, add explicit shift detection, and test whether adaptive gate freezing helps volatile multivariate datasets.
 
 \clearpage
 \section*{References}
