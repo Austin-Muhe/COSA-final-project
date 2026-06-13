@@ -1,0 +1,18 @@
+{
+  "split": "test",
+  "base_mse": 0.45948082208633423,
+  "base_mae": 0.45686888694763184,
+  "dynamic_mse": 0.45947936177253723,
+  "dynamic_mae": 0.4568682312965393,
+  "mse_delta": -1.4603137969970703e-06,
+  "mae_delta": -6.556510925292969e-07,
+  "mse_relative_improvement_pct": 0.0003178182168994681,
+  "mae_relative_improvement_pct": 0.0001435096805835201,
+  "num_samples": 3389,
+  "dataset": "ETTh1",
+  "model": "DLinear",
+  "pred_len": 96,
+  "regime_checkpoint": "",
+  "latent_dim": 16,
+  "hidden_dim": 64
+}

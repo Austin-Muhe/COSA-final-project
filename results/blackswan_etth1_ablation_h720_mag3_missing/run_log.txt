@@ -1,0 +1,24 @@
+=== ETTh1 DLinear h720 mag3 variant=vec_gate shift=level ===
+MSE full=2.0131  before=0.8087  after50=1.3716  after100=1.8871  half_recovery=736 steps
+Results saved to /home/wwww/projects/COSA-final-project/results/blackswan_etth1_ablation_h720_mag3_missing/vec_gate_level_m3_720.json
+=== ETTh1 DLinear h720 mag3 variant=vec_gate shift=variance ===
+MSE full=4.5575  before=0.8087  after50=1.3037  after100=1.7794  half_recovery=1044 steps
+Results saved to /home/wwww/projects/COSA-final-project/results/blackswan_etth1_ablation_h720_mag3_missing/vec_gate_variance_m3_720.json
+=== ETTh1 DLinear h720 mag3 variant=vec_gate shift=trend ===
+MSE full=75.5914  before=0.8087  after50=0.9858  after100=1.1991  half_recovery=1338 steps
+Results saved to /home/wwww/projects/COSA-final-project/results/blackswan_etth1_ablation_h720_mag3_missing/vec_gate_trend_m3_720.json
+=== ETTh1 DLinear h720 mag3 variant=vec_gate shift=spike ===
+MSE full=0.6753  before=0.8087  after50=0.9703  after100=1.0029  half_recovery=137 steps
+Results saved to /home/wwww/projects/COSA-final-project/results/blackswan_etth1_ablation_h720_mag3_missing/vec_gate_spike_m3_720.json
+=== ETTh1 DLinear h720 mag3 variant=rich_ctx shift=level ===
+MSE full=1.9759  before=0.8116  after50=1.3894  after100=1.9173  half_recovery=729 steps
+Results saved to /home/wwww/projects/COSA-final-project/results/blackswan_etth1_ablation_h720_mag3_missing/rich_ctx_level_m3_720.json
+=== ETTh1 DLinear h720 mag3 variant=rich_ctx shift=variance ===
+MSE full=4.5615  before=0.8116  after50=1.3125  after100=1.7927  half_recovery=1038 steps
+Results saved to /home/wwww/projects/COSA-final-project/results/blackswan_etth1_ablation_h720_mag3_missing/rich_ctx_variance_m3_720.json
+=== ETTh1 DLinear h720 mag3 variant=rich_ctx shift=trend ===
+MSE full=51.0256  before=0.8116  after50=0.9964  after100=1.2188  half_recovery=1159 steps
+Results saved to /home/wwww/projects/COSA-final-project/results/blackswan_etth1_ablation_h720_mag3_missing/rich_ctx_trend_m3_720.json
+=== ETTh1 DLinear h720 mag3 variant=rich_ctx shift=spike ===
+MSE full=0.6767  before=0.8116  after50=0.9797  after100=1.0161  half_recovery=139 steps
+Results saved to /home/wwww/projects/COSA-final-project/results/blackswan_etth1_ablation_h720_mag3_missing/rich_ctx_spike_m3_720.json

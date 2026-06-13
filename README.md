@@ -1,257 +1,342 @@
-# COSA Final Project
+# Dynamic Regime Adapter for Zero-Shot Time-Series Adaptation
 
-## Project Goal
+## Abstract
 
-This project is based on the official implementation of COSA: Context-aware Output-Space Adapter for Test-Time Adaptation in Time Series Forecasting.
+This project extends COSA/COSA+ for time-series forecasting under non-IID test-time distribution shifts. The original COSA-style adapter relies on online test-time optimization: it updates a static output-space gate by backpropagating on each test stream segment. That can improve MSE, but it is slower at inference time and does not explicitly reveal which hidden market or sensor regimes the model has discovered.
 
-Official COSA repository: https://github.com/bigbases/COSA_ICLR2026
+Our contribution is a **Dynamic Regime Adapter**: a lightweight hypernetwork that learns to map recent historical context windows into latent regime factors `z`, then generates a horizon-wise correction gate `g` in one forward pass. Instead of tuning a static gate with test-time backpropagation, we meta-train the adapter offline on simulated validation shifts. At test time, the adapter performs **zero-shot adaptation** with `torch.no_grad()`.
 
-Our goal is to reproduce COSA on a selected time-series forecasting dataset and evaluate its behavior under non-IID abrupt test-time distribution shifts.
+The key innovation is moving from static MSE-driven gate tuning to **unsupervised latent pattern discovery**. The `RegimeEncoder` compresses recent time-series context into low-dimensional learned factors, and the `GateGenerator` converts those factors into dynamic output corrections. The learned latent space can be visualized with t-SNE/PCA to show whether the model separates normal, level-shifted, variance-shifted, and spike-shifted regimes.
 
-Main research question:
+## Method Overview
 
-Does COSA remain effective when the test-time data stream suddenly changes?
+The dynamic adapter receives a historical context window:
 
-## Project Direction
+```text
+context_window: (batch_size, context_length, feature_dim)
+```
 
-We first reproduce the original COSA setting on a selected benchmark dataset. Then we construct non-IID test-time streams by injecting abrupt distribution shifts into the test set.
+It produces:
 
-Possible shift types:
+```text
+z: (batch_size, latent_dim)
+g: (batch_size, horizon)
+```
 
-- Level shift
-- Variance shift
-- Trend shift
-- Spike or short-term shock
-- Missing segment or sensor dropout
+The robust forecast is computed as:
 
-Methods to compare:
+```python
+g, z = dynamic_adapter(context_window)
+correction = torch.tanh(g).unsqueeze(-1) * base_forecast
+robust_forecast = base_forecast + correction
+```
 
-- No test-time adaptation baseline
-- Original COSA
-- Possible COSA variants or simple correction baselines
+At test time this is executed under `torch.no_grad()`, so there is no online backpropagation cost.
 
 ## Repository Structure
 
-    COSA-final-project/
-      README.md
-      .gitignore
-      .gitmodules
+```text
+COSA-final-project/
+  experiments/
+    train_dynamic_regime_adapter.py      # Offline meta-training
+    evaluate_dynamic_regime_adapter.py   # Zero-shot inference/evaluation
+    visualize_latent_regimes.py          # t-SNE/PCA visualization of z
+    run_cosa_plus.py                     # Existing COSA+ ablation runner
+
+  external/COSA_ICLR2026/
+    tta/cosa.py                          # DynamicRegimeAdapter implementation
+    config.py                            # COSA config extensions
+    data/                                # Dataset files
+    checkpoints/                         # Frozen forecasting backbone checkpoints
 
-      external/
-        COSA_ICLR2026/          Official COSA implementation as a Git submodule
+  results/
+    regime_adapter_mixed_loss/           # Meta-trained adapter checkpoints
+    regime_adapter_eval_mixed_loss/      # Zero-shot evaluation metrics
+    regime_adapter_latents_mixed_loss/   # Latent-regime plots and arrays
 
-      experiments/              Our custom experiment scripts and notes
-      results/                  Our result tables and figures
-      notebooks/                Our analysis notebooks
-      report/                   Proposal, final report, and presentation materials
+  test_black_swan/
+    test_dynamic_regime_adapter.py       # Unit/smoke tests
+```
 
-## Important Distinction
+## Environment
 
-The following folder contains the official COSA code:
+Use the existing conda environment:
 
-    external/COSA_ICLR2026/
+```bash
+conda activate cosa
+cd /home/wwww/projects/COSA-final-project
+```
 
-We should avoid directly modifying the official code unless necessary.
+Check the basic environment:
 
-Our own project work should mainly go into:
+```bash
+python -c "import torch, numpy, pandas, sklearn, scipy, matplotlib; print('packages ok'); print(torch.__version__)"
+python -c "import torch; print(torch.cuda.is_available()); print(torch.cuda.get_device_name(0) if torch.cuda.is_available() else 'No GPU')"
+```
 
-    experiments/
-    results/
-    notebooks/
-    report/
-    README.md
+Tested setup:
 
-If we need to modify an official script, we should copy it into `experiments/` first and then edit our own copy.
+```text
+Python 3.10.20
+torch 2.11.0+cu128
+GPU: NVIDIA GeForce RTX 5090
+```
 
-Example:
+Do not install the original COSA `requirements.txt` directly, because it may pin an old PyTorch version incompatible with the current GPU stack.
 
-    external/COSA_ICLR2026/scripts/train.sh       Official script
-    experiments/train_etth1_96.sh                 Our modified experiment script
-
-## Server Information
-
-Project root on server:
-
-    /home/wwww/projects/COSA-final-project
-
-Official COSA code path:
-
-    /home/wwww/projects/COSA-final-project/external/COSA_ICLR2026
-
-## Conda Environment
-
-Use the `cosa` environment:
-
-    conda activate cosa
-
-Current tested setup:
-
-    Python 3.10.20
-    torch 2.11.0+cu128
-    numpy 1.23.5
-    scipy 1.10.1
-    GPU: NVIDIA GeForce RTX 5090
-
-Check basic packages:
-
-    python -c "import torch, numpy, pandas, sklearn, scipy, matplotlib; print('basic packages ok'); print('torch:', torch.__version__); print('numpy:', numpy.__version__); print('scipy:', scipy.__version__)"
-
-Check GPU:
-
-    python -c "import torch; print(torch.cuda.is_available()); print(torch.cuda.get_device_name(0) if torch.cuda.is_available() else 'No GPU')"
-
-## Important Warning
-
-Do not run the original command below inside `external/COSA_ICLR2026/`:
-
-    pip install -r requirements.txt
-
-Reason:
-
-The original `requirements.txt` contains an old PyTorch requirement such as `torch==1.7.1`, which is incompatible with the current RTX 5090 environment.
-
-The working PyTorch version is:
-
-    torch 2.11.0+cu128
-
-## Basic Usage for Group Members
-
-Login to the server:
-
-    ssh wwww@10.33.104.26
-
-Enter the project:
-
-    conda activate cosa
-    cd /home/wwww/projects/COSA-final-project
-    git pull
-
-Enter the official COSA code:
-
-    cd external/COSA_ICLR2026
-
-Check GPU before running experiments:
-
-    nvidia-smi
-
-Check Python and GPU environment:
-
-    python -c "import torch; print(torch.__version__); print(torch.cuda.is_available()); print(torch.cuda.get_device_name(0) if torch.cuda.is_available() else 'No GPU')"
-
-## Dataset Location
-
-The official COSA README asks us to place datasets under:
-
-    external/COSA_ICLR2026/datasets/
-
-For the minimal reproduction, we plan to start with:
-
-    ETTh1.csv
-
-Expected path:
-
-    /home/wwww/projects/COSA-final-project/external/COSA_ICLR2026/datasets/ETTh1.csv
-
-## Minimal Reproduction Experiment
-
-Completed minimal setting:
-
-- Dataset: ETTh1
-- Model: DLinear
-- Prediction length: 96
-- Methods:
-  - No-TTA baseline
-  - COSA
-
-Result:
-
-- Baseline MSE: 0.4594808246
-- COSA MSE: 0.4527572393
-- Improvement: 1.46%
-
-This verifies that the official COSA pipeline can run in our server environment.
-
-## Non-IID Abrupt Shift Experiments
-
-We preserve the temporal order of the test set and inject an abrupt distribution shift into the test-time stream. This is the main extension beyond direct reproduction and is used to study whether COSA remains effective when the data stream suddenly changes.
-
-Current implemented setting:
-
-- Dataset: Exchange Rate
-- Model: DLinear
-- Prediction length: 96
-- Shift type: abrupt spike/level shock on the second half of the test split
-- Severities: 0 sigma, 5 sigma, 10 sigma
-
-Implemented shift:
-
-    x_t' = x_t,                       if t < T_shift
-    x_t' = x_t + alpha * sigma,       if t >= T_shift
-
-where `T_shift` is the midpoint of the test split, `alpha` is the severity, and `sigma` is the per-variable test-set standard deviation.
-
-Results:
-
-| Dataset | Model | Horizon | Shift | Baseline MSE | COSA MSE | Improvement | NAR |
-| --- | --- | --- | --- | ---: | ---: | ---: | ---: |
-| exchange_rate | DLinear | 96 | none, 0 sigma | 0.0827968419 | 0.0817446634 | 1.27% | 37.13% |
-| exchange_rate | DLinear | 96 | abrupt spike, 5 sigma | 0.5509226918 | 0.5524317026 | -0.27% | 53.66% |
-| exchange_rate | DLinear | 96 | abrupt spike, 10 sigma | 2.1627802849 | 2.1673173904 | -0.21% | 56.40% |
-
-Segment analysis:
-
-| Shift | Baseline before | COSA before | Baseline transition | COSA transition | Baseline after | COSA after |
-| --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| 0 sigma | 0.0692245141 | 0.0691839233 | 0.1459996402 | 0.1437337101 | 0.0860871598 | 0.0843231827 |
-| 5 sigma | 0.0692245141 | 0.0690561831 | 6.6955876350 | 6.7212104797 | 0.1471323967 | 0.1468728036 |
-| 10 sigma | 0.0692245141 | 0.0690915585 | 29.2314300537 | 29.2752418518 | 0.3594304919 | 0.3627609611 |
-
-The transition segment contains forecasting windows whose prediction targets cross the abrupt shift boundary. This segment shows the largest error increase, which matches the black-swan setting: the model sees pre-shift context but must forecast values that partly enter the shifted regime.
-
-Initial interpretation:
-
-COSA gives a small improvement in the clean Exchange Rate setting. Under abrupt 5 sigma and 10 sigma shifts, the overall improvement becomes negative and NAR rises above 50%, meaning COSA is worse than the no-TTA baseline on more than half of the test windows. This suggests that COSA may be less reliable when the test-time stream contains strong abrupt shifts.
-
-Evaluation metrics:
-
-- MSE
-- MAE
-- Improvement percentage over the no-TTA baseline
-- NAR percentage, the percentage of test windows where COSA has higher MSE than the baseline
-- Before/transition/after shift MSE based on whether each prediction target is before, crossing, or after the shift boundary
-
-## Current Status
-
-Completed:
-
-- GitHub repository created
-- COSA official code added as a submodule
-- Server clone completed
-- Conda environment `cosa` created
-- GPU environment tested successfully
-- Basic Python packages tested successfully
-- ETTh1 DLinear 96 clean baseline training completed
-- ETTh1 DLinear 96 COSA test-time adaptation completed
-- Exchange Rate DLinear 96 spike-shift black-swan experiment completed
-- Main result tables generated
-
-Not completed yet:
-
-- Result analysis and final report
-- Presentation slides
-- AI usage statement and team contribution statement for the report
-
-## Team Workflow
-
-Before editing code on the server:
-
-    cd /home/wwww/projects/COSA-final-project
-    git pull
-
-After editing project files:
-
-    git add .
-    git commit -m "Describe the change"
-    git push
-
-Do not commit large files such as datasets, checkpoints, logs, or model weights.
+## Data and Checkpoints
+
+Expected data location:
+
+```text
+external/COSA_ICLR2026/data/<dataset>/<dataset>.csv
+```
+
+Expected frozen backbone checkpoint location:
+
+```text
+external/COSA_ICLR2026/checkpoints/<model>/<dataset>_<pred_len>/checkpoint_best.pth
+```
+
+Example used in the final experiments:
+
+```text
+Dataset: weather
+Model: DLinear
+Prediction horizon: 96
+Data: external/COSA_ICLR2026/data/weather/weather.csv
+Backbone checkpoint: external/COSA_ICLR2026/checkpoints/DLinear/weather_96/checkpoint_best.pth
+```
+
+## 1. Meta-Train the Dynamic Regime Adapter
+
+The offline phase builds validation meta-training batches:
+
+```text
+(context_window, base_forecast, y_true)
+```
+
+The forecasting backbone is frozen. Only `DynamicRegimeAdapter` is updated. During training, validation context windows are exposed to simulated black-swan shifts, and the adapter learns to generate robust dynamic gates.
+
+Run the mixed-loss meta-training used in the final experiment:
+
+```bash
+python experiments/train_dynamic_regime_adapter.py \
+  --dataset weather \
+  --model DLinear \
+  --pred_len 96 \
+  --batch_size 64 \
+  --epochs 10 \
+  --lr 0.001 \
+  --latent_dim 16 \
+  --hidden_dim 64 \
+  --dropout 0.1 \
+  --mse_weight 0.7 \
+  --mae_weight 0.3 \
+  --output_dir ./results/regime_adapter_mixed_loss
+```
+
+The training loss is:
+
+```python
+mse_loss = F.mse_loss(robust_forecast, y_true)
+mae_loss = F.l1_loss(robust_forecast, y_true)
+loss = mse_weight * mse_loss + mae_weight * mae_loss
+```
+
+This mixed loss reduces overreaction to spikes compared with pure MSE training.
+
+Main output:
+
+```text
+results/regime_adapter_mixed_loss/DLinear/weather/96/dynamic_regime_adapter.pt
+results/regime_adapter_mixed_loss/DLinear/weather/96/meta_training_metrics.json
+```
+
+Final mixed-loss validation result:
+
+```text
+base_val_mse:    0.481351
+adapter_val_mse: 0.432192
+```
+
+## 2. Run Zero-Shot Test-Time Inference
+
+The online phase evaluates the frozen backbone plus the meta-trained dynamic adapter. No test-time optimization is performed.
+
+Run zero-shot inference with the trained adapter:
+
+```bash
+python experiments/evaluate_dynamic_regime_adapter.py \
+  --dataset weather \
+  --model DLinear \
+  --pred_len 96 \
+  --split test \
+  --batch_size 64 \
+  --dropout 0.0 \
+  --regime_checkpoint ./results/regime_adapter_mixed_loss/DLinear/weather/96/dynamic_regime_adapter.pt \
+  --output_dir ./results/regime_adapter_eval_mixed_loss \
+  --save_latents
+```
+
+Run the untrained dynamic-adapter baseline:
+
+```bash
+python experiments/evaluate_dynamic_regime_adapter.py \
+  --dataset weather \
+  --model DLinear \
+  --pred_len 96 \
+  --split test \
+  --batch_size 64 \
+  --latent_dim 16 \
+  --hidden_dim 64 \
+  --dropout 0.0 \
+  --output_dir ./results/regime_adapter_eval \
+  --save_latents
+```
+
+Main output:
+
+```text
+results/regime_adapter_eval_mixed_loss/meta_trained/DLinear/weather/96/metrics_test.json
+```
+
+Final zero-shot result on `weather / DLinear / horizon=96`:
+
+| Method | Test MSE | Test MAE | MSE Improve vs Base | Notes |
+| --- | ---: | ---: | ---: | --- |
+| Base frozen backbone | 0.195218 | 0.234493 | 0.00% | No adapter |
+| DynamicRegimeAdapter untrained | 0.195219 | 0.234494 | -0.00% | No test-time backprop |
+| DynamicRegimeAdapter meta-trained, mixed loss | 0.190373 | 0.240629 | 2.48% | Zero-shot adaptation |
+| COSA original | 0.191272 | 0.237397 | 2.02% | Test-time backprop, 492 adaptation steps |
+| COSA+ | 0.191641 | 0.237735 | 1.83% | Test-time backprop, 492 adaptation steps |
+
+The dynamic adapter matches or exceeds COSA/COSA+ MSE while requiring no online gradient updates.
+
+## 3. Generate Latent Regime t-SNE Visualization
+
+To prove that the adapter discovers hidden regimes, run inference on validation contexts with four explicit regime types:
+
+```text
+Normal
+Level
+Variance
+Spike
+```
+
+The script extracts the intermediate latent vector `z` from the `RegimeEncoder`, projects it to 2D with t-SNE or PCA, and colors each point by the known shift type.
+
+Run t-SNE visualization:
+
+```bash
+python experiments/visualize_latent_regimes.py \
+  --dataset weather \
+  --model DLinear \
+  --pred_len 96 \
+  --regime_checkpoint ./results/regime_adapter_mixed_loss/DLinear/weather/96/dynamic_regime_adapter.pt \
+  --projection tsne \
+  --max_batches 30 \
+  --max_points_per_regime 2000 \
+  --output_dir ./results/regime_adapter_latents_mixed_loss
+```
+
+Run PCA instead of t-SNE:
+
+```bash
+python experiments/visualize_latent_regimes.py \
+  --dataset weather \
+  --model DLinear \
+  --pred_len 96 \
+  --regime_checkpoint ./results/regime_adapter_mixed_loss/DLinear/weather/96/dynamic_regime_adapter.pt \
+  --projection pca \
+  --output_dir ./results/regime_adapter_latents_mixed_loss
+```
+
+Main t-SNE output:
+
+```text
+results/regime_adapter_latents_mixed_loss/tsne/DLinear/weather/96/latent_regimes.png
+```
+
+The script also saves raw analysis artifacts:
+
+```text
+latent_z.npy
+gate_g.npy
+projection_2d.npy
+projection_2d.csv
+labels.npy
+metadata.json
+```
+
+Final t-SNE run collected:
+
+```text
+Normal:   1920 points
+Level:    1920 points
+Variance: 1920 points
+Spike:    1920 points
+Total:    7680 points
+```
+
+If the latent plot shows separable clusters, it is evidence that the adapter is learning regime-specific representations rather than only fitting an output-space correction.
+
+## 4. Compare Against COSA/COSA+
+
+Run existing COSA+ ablations:
+
+```bash
+python experiments/run_cosa_plus.py \
+  --dataset weather \
+  --model DLinear \
+  --pred_len 96 \
+  --variant original \
+  --batch_size 64 \
+  --steps 3 \
+  --output_dir ./results/ablation_dynamic_regime \
+  --visible_devices 0
+```
+
+```bash
+python experiments/run_cosa_plus.py \
+  --dataset weather \
+  --model DLinear \
+  --pred_len 96 \
+  --variant cosa_plus \
+  --batch_size 64 \
+  --steps 3 \
+  --output_dir ./results/ablation_dynamic_regime \
+  --visible_devices 0
+```
+
+## 5. Tests
+
+Run the dynamic adapter tests:
+
+```bash
+python test_black_swan/test_dynamic_regime_adapter.py
+```
+
+Expected output:
+
+```text
+DynamicRegimeAdapter tests passed.
+```
+
+## Key Files
+
+| File | Purpose |
+| --- | --- |
+| `external/COSA_ICLR2026/tta/cosa.py` | `DynamicRegimeAdapter`, mixed-loss training helper, no-backprop inference helper |
+| `experiments/train_dynamic_regime_adapter.py` | Offline meta-training on validation black-swan shifts |
+| `experiments/evaluate_dynamic_regime_adapter.py` | Zero-shot online inference and metric export |
+| `experiments/visualize_latent_regimes.py` | t-SNE/PCA plot of latent regime factors `z` |
+| `test_black_swan/test_dynamic_regime_adapter.py` | Shape, initialization, training, and no-grad inference tests |
+
+## Notes for Future Work
+
+- Tune the mixed loss or try Huber/SmoothL1 loss to improve MAE further.
+- Add explicit gate magnitude regularization to prevent overcorrection.
+- Visualize gate heatmaps alongside latent t-SNE clusters.
+- Repeat the protocol on ETTh1 and Exchange Rate black-swan settings.
+- Add quantitative cluster metrics such as silhouette score or Davies-Bouldin index.

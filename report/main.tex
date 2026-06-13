@@ -32,7 +32,7 @@
 \maketitle
 
 \begin{abstract}
-We study whether a time-series test-time adapter can be learned before deployment and then applied without online backpropagation. Our main method, the Dynamic Regime Adapter, uses a lightweight RegimeEncoder to infer a latent context factor from recent history and a GateGenerator to produce horizon-wise forecast corrections. The adapter is trained offline while the forecasting backbone remains frozen, and test-time inference requires only a single forward pass. On Weather/DLinear/96 it achieves the best clean-test MSE improvement among the compared methods, and on ETTh1/DLinear/96 it slightly outperforms online COSA variants in MSE while avoiding test-time gradient updates. We also include COSA+ as an online COSA-family ablation: it is useful for diagnosing long-horizon robustness, but it is treated as supporting evidence rather than the central contribution.
+We study whether a time-series test-time adapter can be learned before deployment and then applied without online backpropagation. Our main method, the Dynamic Regime Adapter, uses a lightweight RegimeEncoder to infer a latent context factor from recent history and a GateGenerator to produce horizon-wise forecast corrections. The adapter is trained offline while the forecasting backbone remains frozen, and test-time inference requires only a single forward pass. On Weather/DLinear/96 it achieves the best clean-test MSE improvement among the compared methods, and on ETTh1/DLinear/96 it slightly outperforms online COSA variants in MSE while avoiding test-time gradient updates. Under ETTh1/DLinear/horizon-720 black-swan shifts, the meta-trained adapter also achieves the lowest post-shift MSE on level, trend, and spike shifts, while COSA+ remains best on variance shift. We also include COSA+ as an online COSA-family ablation: it is useful for diagnosing long-horizon robustness, but it is treated as supporting evidence rather than the central contribution.
 \end{abstract}
 
 \section{Introduction}
@@ -141,7 +141,7 @@ Datasets & Weather, ETTh1 \\
 Backbone & Frozen DLinear \\
 Prediction lengths & 96, 720 \\
 Black Swan shifts & Level, Variance, Trend, Spike \\
-Black Swan metric & \texttt{mse\_after\_50} for COSA-family robustness checks \\
+Black-swan metric & \texttt{mse\_after\_50} for shifted-data evaluation \\
 Weather/96 COSA setting & batch size 64, $S=3$, $K=10$, PAAS disabled \\
 ETTh1 COSA setting & default batch size 48, $S=3$, $K=10$, PAAS disabled \\
 \bottomrule
@@ -156,7 +156,7 @@ The mixed-loss Dynamic Regime Adapter starts close to identity, as intended: bef
 \subsection{Clean-Test Performance}
 Table~\ref{tab:weather-clean} shows that on Weather/96, the mixed-loss Dynamic Regime Adapter achieves the best MSE improvement (+2.48\%) while requiring no test-time gradient updates. Its MAE is worse than online COSA variants, so the result should be interpreted as an MSE-focused gain rather than a uniform improvement across metrics. Table~\ref{tab:etth1-clean} extends evaluation to ETTh1. At horizon 96, Dynamic meta-trained achieves the best MSE improvement (+1.58\%) with nearly unchanged MAE. At horizon 720, online COSA+ gives the strongest numbers, while Dynamic meta-trained still improves MSE by +3.59\% and MAE by +1.46\% without online optimization. These results support the adapter's main value proposition: competitive clean-test correction with lower deployment complexity.
 
-\begin{table}[!htbp]
+\begin{table}[H]
 \centering
 \small
 \caption{Test performance on Weather/DLinear/96. Dynamic Regime Adapter variants use zero-gradient inference; COSA variants require online test-time backpropagation.}
@@ -199,6 +199,30 @@ Horizon & Method & MSE & MAE & MSE Impr. & MAE Impr. \\
 \end{table}
 
 \FloatBarrier
+\subsection{Black-Swan Shifted Data Performance}
+Table~\ref{tab:dynamic_blackswan_etth1_h720} reports the black-swan shifted-data comparison on ETTh1/DLinear/h=720. Beyond clean-test evaluation, we further test whether the Dynamic Regime Adapter can transfer to black-swan shifted data.
+
+The untrained dynamic adapter is almost identical to No TTA, which confirms that the improvement does not come from random initialization. After offline meta-training, the Dynamic Regime Adapter achieves the lowest post-shift MSE on level, trend, and spike shifts, while COSA+ remains slightly strongest on the variance shift. This suggests that the offline meta-training learns a correction signal that transfers beyond clean-test conditions to several synthetic abrupt shifts in ETTh1/horizon-720. The result strengthens the complementary narrative: COSA+ provides strong online adaptation through test-time gradient updates, while the Dynamic Regime Adapter can deliver competitive or better post-shift recovery without online backpropagation.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Dynamic Regime Adapter black-swan shifted-data comparison on ETTh1/DLinear/h=720, shift magnitude 3.0. Metric is \texttt{mse\_after\_50}. Lower is better.}
+\label{tab:dynamic_blackswan_etth1_h720}
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{lrrrrr}
+\toprule
+Shift type & No TTA & Dynamic untrained & COSA original & COSA+ & Dynamic meta-trained \\
+\midrule
+Level & 1.514135 & 1.514134 & 1.390041 & 1.370746 & \textbf{1.350300} \\
+Variance & 1.401813 & 1.401811 & 1.312613 & \textbf{1.303288} & 1.305544 \\
+Trend & 1.092508 & 1.092506 & 0.996507 & 0.985433 & \textbf{0.972506} \\
+Spike & 1.071504 & 1.071502 & 0.979771 & 0.969925 & \textbf{0.957617} \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
 \subsection{Latent Regime Visualization}
 Figure~\ref{fig:latent-tsne} shows t-SNE projections of latent factors $z$ after adapter meta-training. Weather/DLinear/96 does not form clean regime clusters, while ETTh1/DLinear/720 shows stronger local structure with several curved trajectories. We therefore interpret $z$ as a continuous correction signal rather than a discrete regime classifier. This is consistent with the adapter design: the latent factor is used to generate soft gates, not to assign hard regime labels.
 
@@ -219,27 +243,8 @@ Figure~\ref{fig:latent-tsne} shows t-SNE projections of latent factors $z$ after
 \end{figure}
 
 \FloatBarrier
-\subsection{Supporting COSA-Family Robustness Check}
-The abrupt-shift experiments contextualize both online adaptation and zero-gradient adaptation. On ETTh1/DLinear/horizon-720, Table~\ref{tab:blackswan-main} shows that the meta-trained Dynamic Regime Adapter is strongest on level, trend, and spike shifts, while COSA+ remains slightly best on variance shift. The untrained dynamic adapter is indistinguishable from no-TTA, which indicates that the gain comes from offline meta-training rather than the adapter architecture alone. This strengthens the deployment trade-off: COSA+ remains a strong online robustness reference, but the Dynamic Regime Adapter can deliver competitive post-shift recovery without test-time gradient updates.
-
-\begin{table}[!htbp]
-\centering
-\small
-\caption{Post-shift MSE (\texttt{mse\_after\_50}) on ETTh1/DLinear/h=720, shift magnitude 3.0, including Dynamic Regime Adapter. Lower is better.}
-\label{tab:blackswan-main}
-\begin{tabular}{lrrrrr}
-\toprule
-Shift type & No TTA & Dynamic untrained & COSA original & COSA+ & Dynamic meta-trained \\
-\midrule
-Level & 1.514135 & 1.514134 & 1.390041 & 1.370746 & \textbf{1.350300} \\
-Variance & 1.401813 & 1.401811 & 1.312613 & \textbf{1.303288} & 1.305544 \\
-Trend & 1.092508 & 1.092506 & 0.996507 & 0.985433 & \textbf{0.972506} \\
-Spike & 1.071504 & 1.071502 & 0.979771 & 0.969925 & \textbf{0.957617} \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-Weather gives a more cautious picture. Table~\ref{tab:weather-blackswan} shows that online adaptation clearly helps under Weather horizon-720 shifts, but full COSA+ is slightly worse than original COSA on most shift types. This prevents overclaiming: richer online gates are not a free improvement, especially when the adaptation signal is spread across more variables.
+\subsection{Additional Weather Robustness Check}
+Weather gives a more cautious additional robustness result. Table~\ref{tab:weather-blackswan} shows that online adaptation clearly helps under Weather horizon-720 shifts, but full COSA+ is slightly worse than original COSA on most shift types. This prevents overclaiming: richer online gates are not a free improvement, especially when the adaptation signal is spread across more variables.
 
 \begin{table}[!htbp]
 \centering
@@ -267,10 +272,10 @@ The adapter is not uniformly better across metrics. On Weather/96, the mixed-los
 
 The black-swan experiments refine the cost of removing online gradients. COSA+ is a strong online robustness reference and remains best on ETTh1 variance shift, but the meta-trained Dynamic Regime Adapter is best on level, trend, and spike shifts without online optimization. Weather horizon-720 still prevents overclaiming: richer vector gates are not consistently better when the adaptation signal is noisier or distributed across more variables. The main conclusion is therefore not that either approach dominates, but that Dynamic Regime Adapter offers a practical zero-gradient alternative that can remain competitive under abrupt shifts.
 
-This study is limited to Weather and ETTh1, and the Dynamic Regime Adapter black-swan check currently covers ETTh1/DLinear/horizon-720 only. Future work should extend that evaluation to Weather and other horizons, add quantitative latent-space diagnostics such as silhouette score or neighborhood consistency, and tune the loss or gate regularization to reduce the Weather/96 MAE degradation.
+The Dynamic Regime Adapter black-swan result is currently limited to ETTh1/DLinear/horizon-720 at one shift magnitude. Future work should test more datasets, horizons, and shift severities. Future work should also add quantitative latent-space diagnostics, such as silhouette score or neighborhood consistency, and tune the loss or gate regularization to reduce the Weather/96 MAE degradation.
 
 \section{Conclusion}
-We presented Dynamic Regime Adapter as an offline-learned, zero-gradient test-time adaptation module for time-series forecasting. By encoding recent context into a latent factor and generating horizon-wise correction gates, it improves clean-test MSE while avoiding inference-time backpropagation. COSA+ is useful as an online robustness reference, especially for long-horizon abrupt shifts, but the main project contribution is the Dynamic Regime Adapter's lower-cost adaptation path.
+We presented Dynamic Regime Adapter as an offline-learned, zero-gradient test-time adaptation module for time-series forecasting. By encoding recent context into a latent factor and generating horizon-wise correction gates, it improves clean-test MSE and remains competitive under ETTh1 black-swan shifted data while avoiding inference-time backpropagation. COSA+ is useful as an online robustness reference, especially for long-horizon abrupt shifts, but the main project contribution is the Dynamic Regime Adapter's lower-cost adaptation path.
 
 \section*{AI Usage Statement}
 AI tools were used to inspect code, organize experiments, debug scripts, and assist with report preparation. The reported experimental numbers are taken from the project result files generated by the authors' scripts.

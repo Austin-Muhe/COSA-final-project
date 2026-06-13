@@ -1,0 +1,18 @@
+{
+  "split": "test",
+  "base_mse": 0.19521760940551758,
+  "base_mae": 0.23449333012104034,
+  "dynamic_mse": 0.19521856307983398,
+  "dynamic_mae": 0.23449373245239258,
+  "mse_delta": 9.5367431640625e-07,
+  "mae_delta": 4.023313522338867e-07,
+  "mse_relative_improvement_pct": -0.0004885185717284912,
+  "mae_relative_improvement_pct": -0.0001715747544039914,
+  "num_samples": 10444,
+  "dataset": "weather",
+  "model": "DLinear",
+  "pred_len": 96,
+  "regime_checkpoint": "",
+  "latent_dim": 16,
+  "hidden_dim": 64
+}

@@ -1,0 +1,4 @@
+variant: cosa_plus
+MSE: 0.191641
+MAE: 0.237735
+Gate: /home/wwww/projects/COSA-final-project/results/ablation_dynamic_regime/cosa_plus/DLinear/weather/96/gate_cosa_plus_weather_DLinear_96.npy

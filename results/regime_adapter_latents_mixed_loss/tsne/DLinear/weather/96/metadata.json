@@ -1,0 +1,14 @@
+{
+  "dataset": "weather",
+  "model": "DLinear",
+  "pred_len": 96,
+  "projection": "tsne",
+  "regime_checkpoint": "./results/regime_adapter_mixed_loss/DLinear/weather/96/dynamic_regime_adapter.pt",
+  "num_points": 7680,
+  "shift_types": [
+    "Normal",
+    "Level",
+    "Variance",
+    "Spike"
+  ]
+}

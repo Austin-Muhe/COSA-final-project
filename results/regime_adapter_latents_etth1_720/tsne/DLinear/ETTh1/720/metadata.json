@@ -1,0 +1,14 @@
+{
+  "dataset": "ETTh1",
+  "model": "DLinear",
+  "pred_len": 720,
+  "projection": "tsne",
+  "regime_checkpoint": "./results/regime_adapter_matrix_v1/DLinear/ETTh1/720/dynamic_regime_adapter.pt",
+  "num_points": 7680,
+  "shift_types": [
+    "Normal",
+    "Level",
+    "Variance",
+    "Spike"
+  ]
+}

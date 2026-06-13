@@ -1,0 +1,18 @@
+{
+  "split": "test",
+  "base_mse": 0.7051164507865906,
+  "base_mae": 0.6110584735870361,
+  "dynamic_mse": 0.6798363924026489,
+  "dynamic_mae": 0.6021068692207336,
+  "mse_delta": -0.02528005838394165,
+  "mae_delta": -0.00895160436630249,
+  "mse_relative_improvement_pct": 3.585231676697731,
+  "mae_relative_improvement_pct": 1.4649341814219952,
+  "num_samples": 2765,
+  "dataset": "ETTh1",
+  "model": "DLinear",
+  "pred_len": 720,
+  "regime_checkpoint": "./results/regime_adapter_matrix_v1/DLinear/ETTh1/720/dynamic_regime_adapter.pt",
+  "latent_dim": 16,
+  "hidden_dim": 64
+}

@@ -113,7 +113,7 @@ def plot_etth1_blackswan():
     colors = {"no_tta": "#6E6E6E", "original": "#0072B2", "cosa_plus": "#D55E00"}
     linestyles = {"no_tta": "--", "original": "-", "cosa_plus": "-"}
 
-    fig, axes = plt.subplots(2, 2, figsize=(10, 6.5), sharex=True)
+    fig, axes = plt.subplots(2, 2, figsize=(10, 7.0), sharex=True)
     window_before = 100
     window_after = 120
 
@@ -144,9 +144,17 @@ def plot_etth1_blackswan():
         ax.grid(alpha=0.2)
 
     handles, labels = axes.flat[0].get_legend_handles_labels()
-    fig.legend(handles, labels, loc="upper center", ncol=3, frameon=False)
-    fig.suptitle("ETTh1 / DLinear / Horizon 720: Black Swan Recovery (magnitude=3.0)", y=0.98)
-    fig.tight_layout(rect=(0, 0, 1, 0.93))
+    fig.suptitle("ETTh1 / DLinear / Horizon 720: Black Swan Recovery (magnitude=3.0)", y=0.985)
+    fig.legend(
+        handles,
+        labels,
+        loc="upper center",
+        bbox_to_anchor=(0.5, 0.945),
+        ncol=3,
+        frameon=False,
+        borderaxespad=0.0,
+    )
+    fig.tight_layout(rect=(0, 0, 1, 0.88))
     fig.savefig(OUT_DIR / "figure1_etth1_h720_blackswan_recovery.png", dpi=200)
     fig.savefig(OUT_DIR / "figure1_etth1_h720_blackswan_recovery.pdf")
     plt.close(fig)
@@ -161,21 +169,59 @@ def plot_etth1_blackswan():
 
 
 def plot_ablation(clean_df: pd.DataFrame):
-    variants = ["original", "vec_gate", "rich_ctx", "ctx_std_only", "cosa_plus"]
-    labels = ["Original", "VecGate", "RichCtx", "StdOnly", "COSA+"]
-    colors = ["#4C78A8", "#F58518", "#54A24B", "#B279A2", "#E45756"]
+    variants = ["vec_gate", "rich_ctx", "ctx_std_only", "cosa_plus"]
+    labels = ["VecGate", "RichCtx", "StdOnly", "COSA+"]
+    colors = ["#8C8C8C", "#F4A261", "#D95F5F", "#F2C879"]
     etth1 = clean_df[clean_df["dataset"].eq("ETTh1")]
     horizons = [96, 192, 336, 720]
 
-    fig, axes = plt.subplots(1, 4, figsize=(13, 3.6), sharey=False)
-    for ax, horizon in zip(axes, horizons):
-        subset = etth1[etth1["horizon"].eq(horizon)].set_index("variant").reindex(variants)
-        ax.bar(labels, subset["mse"], color=colors)
-        ax.set_title(f"L={horizon}")
-        ax.tick_params(axis="x", rotation=35)
-        ax.set_ylabel("MSE")
-        ax.grid(axis="y", alpha=0.2)
-    fig.suptitle("ETTh1 / DLinear Ablation Across Horizons")
+    fig, ax = plt.subplots(figsize=(12, 6))
+    x = np.arange(len(horizons))
+    width = 0.17
+
+    for idx, (variant, label, color) in enumerate(zip(variants, labels, colors)):
+        values = []
+        for horizon in horizons:
+            subset = etth1[etth1["horizon"].eq(horizon)].set_index("variant")
+            original = float(subset.loc["original", "mse"])
+            candidate = float(subset.loc[variant, "mse"])
+            values.append((original - candidate) * 1000.0)
+        offset = (idx - (len(variants) - 1) / 2) * width
+        bars = ax.bar(
+            x + offset,
+            values,
+            width=width,
+            label=label,
+            color=color,
+            alpha=0.72,
+            edgecolor=color,
+        )
+        for bar, value in zip(bars, values):
+            if value >= 0:
+                y = value + 0.03
+                va = "bottom"
+            else:
+                y = value - 0.03
+                va = "top"
+            ax.text(
+                bar.get_x() + bar.get_width() / 2,
+                y,
+                f"{value:.2f}",
+                ha="center",
+                va=va,
+                fontsize=9,
+            )
+
+    ax.axhline(0, color="black", linewidth=0.8)
+    ax.set_xticks(x)
+    ax.set_xticklabels([f"L={horizon}" for horizon in horizons])
+    ax.set_ylabel(r"MSE reduction vs Original COSA ($\times 10^{-3}$)")
+    ax.set_title("ETTh1 / DLinear Ablation: Improvement Over Original COSA")
+    ax.legend(loc="upper left", ncol=4, frameon=True)
+    ax.grid(axis="y", linestyle="--", alpha=0.4)
+    ax.set_axisbelow(True)
+    ymin, ymax = ax.get_ylim()
+    ax.set_ylim(min(ymin, -0.65), max(ymax, 2.45))
     fig.tight_layout()
     fig.savefig(OUT_DIR / "figure2_etth1_ablation_bar.png", dpi=200)
     fig.savefig(OUT_DIR / "figure2_etth1_ablation_bar.pdf")

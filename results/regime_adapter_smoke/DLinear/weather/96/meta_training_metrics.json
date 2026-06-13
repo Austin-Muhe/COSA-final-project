@@ -1,0 +1,14 @@
+{
+  "before": {
+    "base_val_mse": 0.2699199914932251,
+    "adapter_val_mse": 0.269919216632843
+  },
+  "after": {
+    "base_val_mse": 0.2699199914932251,
+    "adapter_val_mse": 0.26905369758605957
+  },
+  "history": [
+    0.26991918683052063
+  ],
+  "num_meta_batches": 1
+}

@@ -1,0 +1,18 @@
+{
+  "split": "test",
+  "base_mse": 0.19521760940551758,
+  "base_mae": 0.23449333012104034,
+  "dynamic_mse": 0.1918548345565796,
+  "dynamic_mae": 0.24386286735534668,
+  "mse_delta": -0.0033627748489379883,
+  "mae_delta": 0.009369537234306335,
+  "mse_relative_improvement_pct": 1.7225775867700577,
+  "mae_relative_improvement_pct": -3.995651751756668,
+  "num_samples": 10444,
+  "dataset": "weather",
+  "model": "DLinear",
+  "pred_len": 96,
+  "regime_checkpoint": "./results/regime_adapter/DLinear/weather/96/dynamic_regime_adapter.pt",
+  "latent_dim": 16,
+  "hidden_dim": 64
+}

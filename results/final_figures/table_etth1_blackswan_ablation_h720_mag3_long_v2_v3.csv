@@ -1,0 +1,17 @@
+dataset,model,horizon,shift_type,magnitude,method,mse_after_50
+ETTh1,DLinear,720,level,3.0,cosa_plus,1.3707458972930908
+ETTh1,DLinear,720,level,3.0,original,1.3900408744812012
+ETTh1,DLinear,720,level,3.0,rich_ctx,1.3893530368804932
+ETTh1,DLinear,720,level,3.0,vec_gate,1.3716293573379517
+ETTh1,DLinear,720,spike,3.0,cosa_plus,0.9699252247810364
+ETTh1,DLinear,720,spike,3.0,original,0.9797711968421936
+ETTh1,DLinear,720,spike,3.0,rich_ctx,0.9797028303146362
+ETTh1,DLinear,720,spike,3.0,vec_gate,0.9702786803245544
+ETTh1,DLinear,720,trend,3.0,cosa_plus,0.9854328632354736
+ETTh1,DLinear,720,trend,3.0,original,0.9965068697929382
+ETTh1,DLinear,720,trend,3.0,rich_ctx,0.9963563680648804
+ETTh1,DLinear,720,trend,3.0,vec_gate,0.9858391284942627
+ETTh1,DLinear,720,variance,3.0,cosa_plus,1.303288459777832
+ETTh1,DLinear,720,variance,3.0,original,1.3126128911972046
+ETTh1,DLinear,720,variance,3.0,rich_ctx,1.3124865293502808
+ETTh1,DLinear,720,variance,3.0,vec_gate,1.3037049770355225

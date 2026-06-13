@@ -2,6 +2,7 @@
 
 \usepackage[margin=0.68in]{geometry}
 \usepackage{amsmath}
+\usepackage{amssymb}
 \usepackage{booktabs}
 \usepackage{graphicx}
 \usepackage{hyperref}
@@ -38,9 +39,13 @@ This project focuses on test-time adaptation (TTA), where a trained model is adj
 Our research question is: \textbf{Can COSA-style output-space adaptation remain useful when the test-time stream changes suddenly, especially at long prediction horizons?}
 
 \section{Related Work / Background}
-COSA adapts forecasts in the output space by using recent test-time context rather than updating the full forecasting backbone \cite{cosa_repo}. This makes it attractive for deployment because it is lightweight and can be attached to existing forecasting models. We use DLinear as the backbone because it is simple, efficient, and a strong baseline for long-term forecasting \cite{zeng2023dlinear}. The datasets follow common long-term forecasting benchmarks: ETTh1 from the ETT benchmark \cite{ett} and Weather from standard multivariate forecasting evaluations.
+Recent work on time-series test-time adaptation aims to improve forecasting under non-stationarity while keeping the base model mostly frozen. COSA is the closest related method because it corrects forecasts through a lightweight context-aware output-space adapter \cite{cosa2026}. This makes it attractive for deployment because it can be attached to existing forecasting models instead of updating the full backbone. COSA still updates adapter parameters online during test-time evaluation, while our COSA+ variant studies whether richer context statistics and horizon-wise gates improve that online output-space correction.
 
-This project also relates to robustness under distribution shift. Standard train/validation/test evaluation usually assumes a stable test distribution. Our black-swan tests instead inject abrupt shifts into the test stream and measure the immediate post-shift error. This setting evaluates whether recent context helps adaptation or becomes misleading near a shift boundary.
+Meta-learning and zero-shot forecasting also motivate this project. Oreshkin et al. show that forecasting models can learn transferable adaptation mechanisms across time series without retraining on each target dataset \cite{oreshkin2021meta}. Meta-TTT similarly frames test-time training through a meta-learning minimax objective \cite{tao2025metattt}. These works support the broader idea that adaptation behavior can be learned or structured before deployment rather than being treated as unrestricted online fine-tuning.
+
+Regime-aware methods further show that forecasting performance can improve when models account for changing market or data regimes. RAM-Net uses regime-aware meta-learning to re-weight financial training samples under different market conditions \cite{jang2025ramnet}. Other time-series TTA studies show that lightweight adaptation can help under gradual distribution shifts, but aggressive online updates may hurt under noisy or unstable streams \cite{wu2026tta}. Our black-swan tests therefore inject abrupt level, variance, trend, and spike shifts into the test stream to evaluate whether recent context helps adaptation or becomes misleading near a shift boundary.
+
+We use DLinear as the backbone because it is simple, efficient, and a strong baseline for long-term forecasting \cite{zeng2023dlinear}. The datasets follow common long-term forecasting benchmarks: ETTh1 from the ETT benchmark \cite{ett} and Weather from standard multivariate forecasting evaluations \cite{weather}.
 
 \section{Methodology}
 We compare three method families. \textbf{No-TTA} evaluates the trained DLinear model directly. \textbf{Original COSA} uses the official context-aware output-space adapter. \textbf{COSA+} is our project variant. It keeps the same backbone and evaluation pipeline, but adds richer context statistics and horizon-wise correction capacity:
@@ -65,10 +70,29 @@ For black-swan evaluation, the second part of the test stream is transformed aft
     S(x_t; \alpha), & t \ge T_{\text{shift}},
   \end{cases}
 \end{equation}
-where $S$ is one of four synthetic shifts: level, variance, trend, or spike. We report \texttt{mse\_after\_50}, the MSE after a short post-shift warm-up, to focus on recovery rather than only the exact boundary.
+where $S$ is one of four synthetic shifts: level, variance, trend, or spike. In the implementation, $\alpha$ is the shift magnitude, $\sigma_{\mathrm{tr}}$ is the training-set standard deviation, and $\mu_{\mathrm{pre}}=\mathrm{mean}(x_{t<T_{\text{shift}}})$.
+
+\begin{table}[h]
+\centering
+\small
+\caption{Synthetic black-swan shift definitions.}
+\begin{tabular}{p{0.12\linewidth}p{0.52\linewidth}p{0.26\linewidth}}
+\toprule
+Shift type & Transformation after $T_{\text{shift}}$ & Intuition \\
+\midrule
+Level & $x'_t=x_t+\alpha\sigma_{\mathrm{tr}},\ t\ge T_{\text{shift}}$ & sudden mean/level change \\
+Variance & $x'_t=\mu_{\mathrm{pre}}+\alpha(x_t-\mu_{\mathrm{pre}}),\ t\ge T_{\text{shift}}$ & volatility scaling around pre-shift mean \\
+Trend & $x'_t=x_t+(t-T_{\text{shift}})\alpha\sigma_{\mathrm{tr}}/100,\ t\ge T_{\text{shift}}$ & gradual directional drift \\
+Spike & $x'_{T_{\text{shift}}}=x_{T_{\text{shift}}}+\alpha\sigma_{\mathrm{tr}}$; otherwise unchanged & single extreme disturbance \\
+\bottomrule
+\end{tabular}
+\label{tab:shift_definitions}
+\end{table}
+
+We report \texttt{mse\_after\_50}, the MSE after a short post-shift warm-up, to focus on recovery rather than only the exact boundary.
 
 \section{Implementation Details}
-The official implementation is kept in \texttt{external/COSA\_ICLR2026/}. Project code is separated into \texttt{experiments/}, \texttt{experiments/tta/}, \texttt{experiments/blackswan/}, and \texttt{results/}. The main entry point is \texttt{experiments/run\_cosa\_plus.py}; black-swan shifts are implemented in \texttt{experiments/blackswan/shift\_injector.py} and \texttt{experiments/blackswan/run\_blackswan.py}. Final tables and figures are stored in \texttt{results/final\_figures/}.
+The official implementation is kept in \path{external/COSA_ICLR2026/}. Project code is separated into \path{experiments/}, \path{experiments/tta/}, \path{experiments/blackswan/}, and \path{results/}. The main entry point is \path{experiments/run_cosa_plus.py}; black-swan shifts are implemented in \path{experiments/blackswan/shift_injector.py} and \path{experiments/blackswan/run_blackswan.py}. Final tables and figures are stored in \path{results/final_figures/}.
 
 The tested environment uses Python 3.10.20, PyTorch 2.11.0+cu128, NumPy 1.23.5, SciPy 1.10.1, and an NVIDIA GeForce RTX 5090 GPU. We also added preflight checks so experiments fail clearly when required datasets or checkpoints are missing, instead of silently evaluating randomly initialized models.
 
@@ -154,6 +178,32 @@ Spike & 1.0715 & 0.9798 & \textbf{0.9699} \\
 
 Table~\ref{tab:etth1_shift} gives the strongest positive result. At horizon 720, both COSA methods beat no-TTA after abrupt shifts, and COSA+ is best for all four shift types. Relative to original COSA, COSA+ improves post-shift MSE by about 0.95\%--1.39\%. Relative to no-TTA, the gain is much larger, around 9\%--10\%. This indicates that output-space adaptation is useful after the shift, and the added horizon-wise flexibility helps long-horizon recovery.
 
+\begin{table}[H]
+\centering
+\small
+\caption{ETTh1 horizon-720 black-swan ablation at shift magnitude 3.0. Values are \texttt{mse\_after\_50}; lower is better.}
+\begin{tabular}{lrrrr}
+\toprule
+Shift & Original COSA & VecGate & RichCtx & COSA+ \\
+\midrule
+Level & 1.3900 & 1.3716 & 1.3894 & \textbf{1.3707} \\
+Variance & 1.3126 & 1.3037 & 1.3125 & \textbf{1.3033} \\
+Trend & 0.9965 & 0.9858 & 0.9964 & \textbf{0.9854} \\
+Spike & 0.9798 & 0.9703 & 0.9797 & \textbf{0.9699} \\
+\bottomrule
+\end{tabular}
+\label{tab:etth1_shift_ablation}
+\end{table}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.82\linewidth]{../../results/final_figures/figure_etth1_blackswan_ablation_h720_mag3_bar_v2.pdf}
+\caption{ETTh1 horizon-720 black-swan ablation improvement at shift magnitude 3.0. Values show MSE reduction relative to Original COSA; higher is better. COSA+ is nearly tied with VecGate and clearly better than RichCtx.}
+\label{fig:etth1_shift_ablation}
+\end{figure}
+
+Table~\ref{tab:etth1_shift_ablation} and Figure~\ref{fig:etth1_shift_ablation} explain where the black-swan gain comes from. COSA+ is very close to the VecGate-only variant across all four shift types, while RichCtx remains close to original COSA. This suggests that the post-shift improvement mainly comes from the horizon-wise vector gate, which can adjust correction strength across forecast steps, rather than from richer context statistics alone.
+
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.82\linewidth]{../../results/final_figures/figure1_etth1_h720_blackswan_recovery.pdf}
@@ -180,14 +230,37 @@ Spike & 0.2021 & 0.1606 & \textbf{0.1606} & 0.1617 \\
 
 Weather gives a more cautious conclusion. Adaptation is clearly valuable under shifts: original COSA reduces post-shift MSE by about 8\% on variance shift and more than 20\% on trend/spike shifts compared with no-TTA. However, the full COSA+ variant is slightly worse than original COSA. The rich-context-only variant is almost tied with original and slightly best on variance/spike. A plausible reason is dataset dimensionality: ETTh1 has 7 variables, while Weather has 21 variables. COSA adapts variable-wise output streams, so the adaptation signal is spread across more parallel univariate streams on Weather. With only $S=3$ gradient steps per batch, the 720-dimensional vector gate may not receive enough stable signal to learn useful step-wise corrections. This separates the two modifications: Mod B (rich context) is stable, while Mod A (vector gating) needs stronger regularization or dataset-specific tuning on high-dimensional volatile data.
 
+As supporting sensitivity evidence, we also swept black-swan magnitude on ETTh1/DLinear at horizon 720 for magnitudes 1.0, 2.0, and 3.0. COSA+ beats original COSA in all 12 shift-magnitude settings, while both adaptation methods remain better than no-TTA. The sweep supports the robustness trend, especially for level and variance shifts where error increases most strongly with magnitude, but we treat it as supporting evidence because it covers one dataset, backbone, and horizon.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.88\linewidth]{../../results/final_figures/figure_etth1_blackswan_magnitude_sweep_h720_clear_v1.pdf}
+\caption{Supporting magnitude sweep on ETTh1/DLinear horizon 720. COSA+ consistently improves over original COSA across all 12 shift-magnitude settings.}
+\label{fig:magnitude_sweep}
+\end{figure}
+
 \section{Conclusion}
-This project reproduced COSA and explored COSA+ for robust test-time adaptation in time-series forecasting. The main finding is conditional rather than absolute. COSA+ does not reliably improve clean short-horizon performance, and on Weather the full vector gate can hurt. However, at ETTh1 horizon 720 under abrupt black-swan shifts, COSA+ consistently improves over original COSA and no-TTA. The result supports the idea that richer output-space adaptation is most useful when the forecast horizon is long and post-shift errors accumulate over many future steps. The limitation is equally important: high-dimensional Weather results show that vector gating should not be treated as a free improvement. Future work should tune gate regularization, add explicit shift detection, and test whether adaptive gate freezing helps volatile multivariate datasets.
+This project reproduced COSA and explored COSA+ for robust test-time adaptation in time-series forecasting. The main finding is conditional rather than absolute. COSA+ does not reliably improve clean short-horizon performance, and on Weather the full vector gate can hurt. However, at ETTh1 horizon 720 under abrupt black-swan shifts, COSA+ consistently improves over original COSA and no-TTA, and the black-swan ablation shows that this gain mainly comes from the horizon-wise vector gate rather than richer context statistics alone. The result supports the idea that richer output-space adaptation is most useful when the forecast horizon is long and post-shift errors accumulate over many future steps. The limitation is equally important: high-dimensional Weather results show that vector gating should not be treated as a free improvement. Future work should tune gate regularization, add explicit shift detection, and test whether adaptive gate freezing helps volatile multivariate datasets.
 
 \clearpage
-\section*{References}
 \begin{thebibliography}{9}
+\bibitem{cosa2026}
+J. Im and H.-Y. Kwon. COSA: Context-aware output-space adapter for test-time adaptation in time series forecasting. \textit{International Conference on Learning Representations (ICLR)}, 2026.
+
+\bibitem{oreshkin2021meta}
+Boris N. Oreshkin, Dmitri Carpov, Nicolas Chapados, and Yoshua Bengio. Meta-learning framework with applications to zero-shot time-series forecasting. \textit{Proceedings of the AAAI Conference on Artificial Intelligence}, 2021. \url{https://arxiv.org/pdf/2002.02887}
+
+\bibitem{jang2025ramnet}
+J. Jang, T. Kim, D. Oh, and S.-H. Park. Adaptive sample weighting with regime-aware meta-learning framework for financial forecasting. In \textit{Proceedings of the 6th ACM International Conference on AI in Finance (ICAIF '25)}, ACM, 2025. \url{https://doi.org/10.1145/3768292.3770374}
+
+\bibitem{tao2025metattt}
+Chen Tao, Li Shen, and Soumik Mondal. Meta-TTT: A meta-learning minimax framework for test-time training. \textit{International Conference on Machine Learning and Applications (ICMLA)}, 2025. \url{https://doi.org/10.1109/ICMLA66185.2025.00008}
+
+\bibitem{wu2026tta}
+Yurui Wu, Qingying Deng, Wonou Chung, and Mairui Li. Test-time adaptation for non-stationary time series: From synthetic regime shifts to financial markets, 2026. \url{https://arxiv.org/pdf/2602.00073}
+
 \bibitem{cosa_repo}
-BigBases. COSA\_ICLR2026: Official implementation of COSA, Context-aware Output-Space Adapter for Test-Time Adaptation in Time Series Forecasting. GitHub repository. \url{https://github.com/bigbases/COSA_ICLR2026}
+BigBases. COSA\_ICLR2026: Official implementation of COSA. GitHub repository. \url{https://github.com/bigbases/COSA_ICLR2026}
 
 \bibitem{zeng2023dlinear}
 Ailing Zeng, Muxi Chen, Lei Zhang, and Qiang Xu. Are Transformers Effective for Time Series Forecasting? \textit{Proceedings of the AAAI Conference on Artificial Intelligence}, 2023. \url{https://arxiv.org/abs/2205.13504}
@@ -211,6 +284,16 @@ Fill in the actual names, student IDs, and contributions before submission.
 \end{itemize}
 
 \section*{Appendix: Reproducibility Notes}
-Main scripts used in this project include \texttt{experiments/run\_05\_main\_exp.sh}, \texttt{experiments/run\_04\_ablation.sh}, \texttt{experiments/run\_06\_blackswan\_mag3.sh}, and \texttt{experiments/make\_final\_artifacts.py}. The final artifacts used by this report are in \texttt{results/final\_figures/}.
+Main scripts used in this project include:
+\begin{itemize}
+  \item \path{experiments/run_05_main_exp.sh}
+  \item \path{experiments/run_04_ablation.sh}
+  \item \path{experiments/run_06_blackswan_mag3.sh}
+  \item \path{experiments/run_07_blackswan_etth1_ablation.sh}
+  \item \path{experiments/run_08_blackswan_magnitude_sweep.sh}
+  \item \path{experiments/make_final_artifacts.py}
+  \item \path{experiments/blackswan/make_small_artifacts.py}
+\end{itemize}
+The final report figures and tables are stored under \path{results/final_figures/}.
 
 \end{document}

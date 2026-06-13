@@ -1,0 +1,4 @@
+variant: original
+MSE: 0.191272
+MAE: 0.237397
+Gate: /home/wwww/projects/COSA-final-project/results/ablation_dynamic_regime/original/DLinear/weather/96/gate_original_weather_DLinear_96.npy

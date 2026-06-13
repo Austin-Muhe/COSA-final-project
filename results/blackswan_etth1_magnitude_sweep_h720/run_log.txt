@@ -1,0 +1,84 @@
+=== ETTh1 DLinear h720 mag=1.0 variant=no_tta shift=level ===
+MSE full=0.8414  before=0.8651  after50=1.1349  after100=1.2812  half_recovery=716 steps
+Results saved to /home/wwww/projects/COSA-final-project/results/blackswan_etth1_magnitude_sweep_h720/no_tta_level_m1_720.json
+=== ETTh1 DLinear h720 mag=1.0 variant=no_tta shift=variance ===
+MSE full=0.7051  before=0.8651  after50=1.0515  after100=1.0919  half_recovery=139 steps
+Results saved to /home/wwww/projects/COSA-final-project/results/blackswan_etth1_magnitude_sweep_h720/no_tta_variance_m1_720.json
+=== ETTh1 DLinear h720 mag=1.0 variant=no_tta shift=trend ===
+MSE full=12.8990  before=0.8651  after50=1.0623  after100=1.1504  half_recovery=-1 steps
+Results saved to /home/wwww/projects/COSA-final-project/results/blackswan_etth1_magnitude_sweep_h720/no_tta_trend_m1_720.json
+=== ETTh1 DLinear h720 mag=1.0 variant=no_tta shift=spike ===
+MSE full=0.7060  before=0.8651  after50=1.0554  after100=1.0958  half_recovery=140 steps
+Results saved to /home/wwww/projects/COSA-final-project/results/blackswan_etth1_magnitude_sweep_h720/no_tta_spike_m1_720.json
+=== ETTh1 DLinear h720 mag=1.0 variant=original shift=level ===
+MSE full=0.8208  before=0.8115  after50=1.0332  after100=1.1649  half_recovery=717 steps
+Results saved to /home/wwww/projects/COSA-final-project/results/blackswan_etth1_magnitude_sweep_h720/original_level_m1_720.json
+=== ETTh1 DLinear h720 mag=1.0 variant=original shift=variance ===
+MSE full=0.6731  before=0.8115  after50=0.9611  after100=0.9978  half_recovery=137 steps
+Results saved to /home/wwww/projects/COSA-final-project/results/blackswan_etth1_magnitude_sweep_h720/original_variance_m1_720.json
+=== ETTh1 DLinear h720 mag=1.0 variant=original shift=trend ===
+MSE full=8.3054  before=0.8115  after50=0.9700  after100=1.0487  half_recovery=1320 steps
+Results saved to /home/wwww/projects/COSA-final-project/results/blackswan_etth1_magnitude_sweep_h720/original_trend_m1_720.json
+=== ETTh1 DLinear h720 mag=1.0 variant=original shift=spike ===
+MSE full=0.6739  before=0.8115  after50=0.9645  after100=1.0013  half_recovery=138 steps
+Results saved to /home/wwww/projects/COSA-final-project/results/blackswan_etth1_magnitude_sweep_h720/original_spike_m1_720.json
+=== ETTh1 DLinear h720 mag=1.0 variant=cosa_plus shift=level ===
+MSE full=0.8047  before=0.8086  after50=1.0205  after100=1.1435  half_recovery=717 steps
+Results saved to /home/wwww/projects/COSA-final-project/results/blackswan_etth1_magnitude_sweep_h720/cosa_plus_level_m1_720.json
+=== ETTh1 DLinear h720 mag=1.0 variant=cosa_plus shift=variance ===
+MSE full=0.6708  before=0.8086  after50=0.9516  after100=0.9839  half_recovery=136 steps
+Results saved to /home/wwww/projects/COSA-final-project/results/blackswan_etth1_magnitude_sweep_h720/cosa_plus_variance_m1_720.json
+=== ETTh1 DLinear h720 mag=1.0 variant=cosa_plus shift=trend ===
+MSE full=5.8083  before=0.8086  after50=0.9600  after100=1.0320  half_recovery=1151 steps
+Results saved to /home/wwww/projects/COSA-final-project/results/blackswan_etth1_magnitude_sweep_h720/cosa_plus_trend_m1_720.json
+=== ETTh1 DLinear h720 mag=1.0 variant=cosa_plus shift=spike ===
+MSE full=0.6715  before=0.8086  after50=0.9549  after100=0.9872  half_recovery=136 steps
+Results saved to /home/wwww/projects/COSA-final-project/results/blackswan_etth1_magnitude_sweep_h720/cosa_plus_spike_m1_720.json
+=== ETTh1 DLinear h720 mag=2.0 variant=no_tta shift=level ===
+MSE full=1.2533  before=0.8651  after50=1.2891  after100=1.6107  half_recovery=719 steps
+Results saved to /home/wwww/projects/COSA-final-project/results/blackswan_etth1_magnitude_sweep_h720/no_tta_level_m2_720.json
+=== ETTh1 DLinear h720 mag=2.0 variant=no_tta shift=variance ===
+MSE full=2.1008  before=0.8651  after50=1.1770  after100=1.3854  half_recovery=968 steps
+Results saved to /home/wwww/projects/COSA-final-project/results/blackswan_etth1_magnitude_sweep_h720/no_tta_variance_m2_720.json
+=== ETTh1 DLinear h720 mag=2.0 variant=no_tta shift=trend ===
+MSE full=48.3350  before=0.8651  after50=1.0759  after100=1.2320  half_recovery=-1 steps
+Results saved to /home/wwww/projects/COSA-final-project/results/blackswan_etth1_magnitude_sweep_h720/no_tta_trend_m2_720.json
+=== ETTh1 DLinear h720 mag=2.0 variant=no_tta shift=spike ===
+MSE full=0.7076  before=0.8651  after50=1.0621  after100=1.1024  half_recovery=140 steps
+Results saved to /home/wwww/projects/COSA-final-project/results/blackswan_etth1_magnitude_sweep_h720/no_tta_spike_m2_720.json
+=== ETTh1 DLinear h720 mag=2.0 variant=original shift=level ===
+MSE full=1.2491  before=0.8115  after50=1.1762  after100=1.4718  half_recovery=724 steps
+Results saved to /home/wwww/projects/COSA-final-project/results/blackswan_etth1_magnitude_sweep_h720/original_level_m2_720.json
+=== ETTh1 DLinear h720 mag=2.0 variant=original shift=variance ===
+MSE full=2.0889  before=0.8115  after50=1.0872  after100=1.2894  half_recovery=904 steps
+Results saved to /home/wwww/projects/COSA-final-project/results/blackswan_etth1_magnitude_sweep_h720/original_variance_m2_720.json
+=== ETTh1 DLinear h720 mag=2.0 variant=original shift=trend ===
+MSE full=26.9507  before=0.8115  after50=0.9818  after100=1.1226  half_recovery=1253 steps
+Results saved to /home/wwww/projects/COSA-final-project/results/blackswan_etth1_magnitude_sweep_h720/original_trend_m2_720.json
+=== ETTh1 DLinear h720 mag=2.0 variant=original shift=spike ===
+MSE full=0.6754  before=0.8115  after50=0.9708  after100=1.0075  half_recovery=138 steps
+Results saved to /home/wwww/projects/COSA-final-project/results/blackswan_etth1_magnitude_sweep_h720/original_spike_m2_720.json
+=== ETTh1 DLinear h720 mag=2.0 variant=cosa_plus shift=level ===
+MSE full=1.2299  before=0.8086  after50=1.1602  after100=1.4439  half_recovery=727 steps
+Results saved to /home/wwww/projects/COSA-final-project/results/blackswan_etth1_magnitude_sweep_h720/cosa_plus_level_m2_720.json
+=== ETTh1 DLinear h720 mag=2.0 variant=cosa_plus shift=variance ===
+MSE full=2.0689  before=0.8086  after50=1.0778  after100=1.2748  half_recovery=968 steps
+Results saved to /home/wwww/projects/COSA-final-project/results/blackswan_etth1_magnitude_sweep_h720/cosa_plus_variance_m2_720.json
+=== ETTh1 DLinear h720 mag=2.0 variant=cosa_plus shift=trend ===
+MSE full=24.0163  before=0.8086  after50=0.9713  after100=1.1034  half_recovery=1158 steps
+Results saved to /home/wwww/projects/COSA-final-project/results/blackswan_etth1_magnitude_sweep_h720/cosa_plus_trend_m2_720.json
+=== ETTh1 DLinear h720 mag=2.0 variant=cosa_plus shift=spike ===
+MSE full=0.6730  before=0.8086  after50=0.9610  after100=0.9933  half_recovery=136 steps
+Results saved to /home/wwww/projects/COSA-final-project/results/blackswan_etth1_magnitude_sweep_h720/cosa_plus_spike_m2_720.json
+=== reuse existing ./results/blackswan_mag3_720/no_tta_level_m3_720.json ===
+=== reuse existing ./results/blackswan_mag3_720/no_tta_variance_m3_720.json ===
+=== reuse existing ./results/blackswan_mag3_720/no_tta_trend_m3_720.json ===
+=== reuse existing ./results/blackswan_mag3_720/no_tta_spike_m3_720.json ===
+=== reuse existing ./results/blackswan_mag3_720/original_level_m3_720.json ===
+=== reuse existing ./results/blackswan_mag3_720/original_variance_m3_720.json ===
+=== reuse existing ./results/blackswan_mag3_720/original_trend_m3_720.json ===
+=== reuse existing ./results/blackswan_mag3_720/original_spike_m3_720.json ===
+=== reuse existing ./results/blackswan_mag3_720/cosa_plus_level_m3_720.json ===
+=== reuse existing ./results/blackswan_mag3_720/cosa_plus_variance_m3_720.json ===
+=== reuse existing ./results/blackswan_mag3_720/cosa_plus_trend_m3_720.json ===
+=== reuse existing ./results/blackswan_mag3_720/cosa_plus_spike_m3_720.json ===
